@@ -5,14 +5,6 @@
 using namespace std;
 
 
-//현재 하고 있는 기능
-/*
-
-블록 데이터 선언
-
-*/
-
-
 vector<vector<vector<int>>> Block::create_block(){
     mino[0] = {
         {0, 0, 0, 0},

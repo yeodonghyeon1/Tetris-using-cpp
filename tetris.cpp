@@ -13,25 +13,7 @@ using namespace std;
 #define LEFT 75
 #define RIGHT 77
 
-//현재 하고 있는 기능
-/*
 
-맵 생성. 
-맵 크기 조절.
-맵 출력
-시작 기능
-블럭 일정 시간마다 내리기.(blockAction)
-블럭 보드에 추가(blockAction)
-
-
-//내가 생각하는 테트리스 요소
-
-맵 생성. 
-맵 크기 조절.
-맵 출력
-시작 기능
-
-*/
 class tetris{
     public:
         bool successfully_bind_block = true;
@@ -157,10 +139,9 @@ class tetris{
             bool can_move = false;
             int lotation_number = 0;
             while(running) {
-                if (_kbhit()) {        //키보드 입력 확인 (true / false)
-                    c = _getch();      // 방향키 입력시 224 00이 들어오게 되기에 앞에 있는 값 224를 없앰
-                    if (c == -32) {    // -32로 입력되면
-                        c = _getch();  // 새로 입력값을 판별하여 상하좌우 출력
+                if (_kbhit()) {      
+                    c = _getch();     
+                    if (c == -32) {    
                         {
                             int move_number = 0;
 
@@ -262,9 +243,8 @@ class tetris{
                                     bw->insert_window_down++;
                                 }
                                 break;
-                            // 스페이스바 입력 처리 (동작은 비워둠)
                             case ' ':
-                                // 스페이스바 동작 구현 예정
+                               
                                 break;
                             }
                         }
@@ -323,22 +303,6 @@ class tetris{
             while(running){
                 mtx.lock();
 
-
-                //전체 보드 순회 확인 
-                // for(int i = y-1; i > 0; --i){
-                //     for(int j = x-1; j > 0; --j){
-                //         if(map[i][j] == 1){
-                //             if((map[i+1][j] == -1 || map[i+1][j]== 2)){
-                //                 bind_block = true;
-                //             }
-                //         }
-                //     }   
-                // }
-                //3  7 (3 4 5 6)
-                //1  5 (1 2 3 4)
-
-
-                //윈도우 크기만큼만 확인 (18*8*2 = 288번 순회 -> 4*4*2 32번 순회 개선)
                 int down = std::clamp(bw->insert_window_down, 0, y-1);
                 int up = std::clamp(bw->insert_window_up, 0, y-1);
                 int back = std::clamp(bw->insert_window_back, 0, x-1);
@@ -428,7 +392,6 @@ class tetris{
             bw->insert_window_down = 5; 
             int block_x=0;
             int block_y=0;
-            //블럭 생성 공간입니다
 
             for(int i = bw->insert_window_up; i < bw->insert_window_down; ++i){
                 block_x = 0;
@@ -469,21 +432,17 @@ class tetris{
         void show_map(vector<vector<int>> map){
             for(int i = 0; i< y; ++i){
                 for(int j =0; j< x; ++j){
-                    //벽면
                     if(map[i][j] == -1){
-                        std::cout << "■ ";
+                        std::cout << "?? ";
                     }
-                    //빈 공간
                     else if(map[i][j] == 0){
                         std::cout << "  ";
                     }
-                    //현재 블럭
                     else if(map[i][j] == 1){
-                        std::cout << "□ ";
+                        std::cout << "?? ";
                     }
-                    //고정 블럭
                     else if(map[i][j] == 2){
-                        std::cout << "▣ ";
+                        std::cout << "?? ";
                     }
                 }
                 std::cout << std::endl;  
