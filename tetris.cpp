@@ -139,9 +139,10 @@ class tetris{
             bool can_move = false;
             int lotation_number = 0;
             while(running) {
-                if (_kbhit()) {      
-                    c = _getch();     
-                    if (c == -32) {    
+                if (_kbhit()) {        // Check keyboard input (true / false)
+                    c = _getch();      // Remove the leading 224 value because arrow keys send 224 00 sequence
+                    if (c == -32) {    // If the input is -32
+                        c = _getch();  // Identify which arrow key was pressed
                         {
                             int move_number = 0;
 
@@ -243,8 +244,9 @@ class tetris{
                                     bw->insert_window_down++;
                                 }
                                 break;
+                            // Space bar input handling (currently empty)
                             case ' ':
-                               
+                                // Space bar action to be implemented
                                 break;
                             }
                         }
@@ -302,6 +304,21 @@ class tetris{
         void down_block_and_bind(){
             while(running){
                 mtx.lock();
+
+
+                // Iterate over the entire board
+                // for(int i = y-1; i > 0; --i){
+                //     for(int j = x-1; j > 0; --j){
+                //         if(map[i][j] == 1){
+                //             if((map[i+1][j] == -1 || map[i+1][j]== 2)){
+                //                 bind_block = true;
+                //             }
+                //         }
+                //     }   
+                // }
+                //3  7 (3 4 5 6)
+                //1  5 (1 2 3 4)
+                // Check only within the window region (18*8*2 = 288 iterations -> optimized to 4*4*2 = 32 iterations)
 
                 int down = std::clamp(bw->insert_window_down, 0, y-1);
                 int up = std::clamp(bw->insert_window_up, 0, y-1);
@@ -392,6 +409,7 @@ class tetris{
             bw->insert_window_down = 5; 
             int block_x=0;
             int block_y=0;
+            // Block creation area
 
             for(int i = bw->insert_window_up; i < bw->insert_window_down; ++i){
                 block_x = 0;
@@ -432,17 +450,21 @@ class tetris{
         void show_map(vector<vector<int>> map){
             for(int i = 0; i< y; ++i){
                 for(int j =0; j< x; ++j){
+                    // Wall
                     if(map[i][j] == -1){
-                        std::cout << "?? ";
+                        std::cout << "бс ";
                     }
+                    // Empty space
                     else if(map[i][j] == 0){
                         std::cout << "  ";
                     }
+                    // Current block
                     else if(map[i][j] == 1){
-                        std::cout << "?? ";
+                        std::cout << "бр ";
                     }
+                    // Fixed block
                     else if(map[i][j] == 2){
-                        std::cout << "?? ";
+                        std::cout << "в├ ";
                     }
                 }
                 std::cout << std::endl;  

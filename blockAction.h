@@ -11,7 +11,6 @@ public:
     void rotation_block();
     void bind_block();
 private:
-    // 필요한 멤버 변수 선언
 };
 
 #endif
