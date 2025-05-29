@@ -1,5 +1,7 @@
 # Tetris Game (C++)
 
+<img src="https://github.com/user-attachments/assets/0c4bbcb6-6db1-4b5f-ab6a-c90c430090ed" width="174", height="385">
+
 A simple Tetris game implemented in C++.
 
 ## Features
