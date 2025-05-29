@@ -33,5 +33,3 @@ A simple Tetris game implemented in C++.
 - **Up Arrow**: Rotate block
 - **Space**: (Reserved for future use)
 
-## License
-MIT License 
