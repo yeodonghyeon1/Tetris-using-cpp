@@ -9,6 +9,8 @@
                 "-g",
                 "${file}",
                 "block.cpp",
+                "blockAction.cpp",
+                "keyAction.cpp",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],
