@@ -13,36 +13,35 @@ using namespace std;
 
 
 
-
-
-Tetris::Tetris(){}
+Tetris::Tetris(){
+}
 
 void Tetris::set_x(int new_x){
-    x= new_x;
+    state->x = new_x;
 }
 void Tetris::set_y(int new_y){
-    y= new_y;
+    state->y = new_y;
 }
 
 void Tetris::init(){
-    x = 10;
-    y = 20;
+    state = std::make_shared<game_state>();
+    state->x = 10;
+    state->y = 20;
+    state->running = true;
+    state->bind_block = false;
+    state->game_state = true;
+    state->successfully_bind_block = true;
     bw = std::make_shared<block_window>();
-    bw->insert_window_front = ((x/2 -2));
-    bw->insert_window_back = ((x/2 +2));
+    bw->insert_window_front = ((state->x/2 -2));
+    bw->insert_window_back = ((state->x/2 +2));
     bw->insert_window_up = 1; 
     bw->insert_window_down = 5; 
     mtx = std::make_shared<std::mutex>();
-    running = true;
-    bind_block = false;
-    game_state = true;
-    successfully_bind_block = true;
     map = gridmap();
-
 }
 
 int Tetris::roation_handler(int lotation_number){
-    std::shared_ptr<ActionBlock> ab = std::make_shared<ActionBlock>(x, y, map, current_block, bw);
+    std::shared_ptr<ActionBlock> ab = std::make_shared<ActionBlock>(state, map, current_block, bw);
     bool result = ab->block_rotation(lotation_number);
      if(result){ 
         lotation_number++;
@@ -56,10 +55,10 @@ int Tetris::roation_handler(int lotation_number){
 void Tetris::run(){
     init();
     t1 = std::thread(&Tetris::down_block_and_bind, this);
-    std::shared_ptr<KeyAction> key_thread = std::make_shared<KeyAction>(this, x, y, map, bind_block, running, bw, current_block, mtx);
+    std::shared_ptr<KeyAction> key_thread = std::make_shared<KeyAction>(this, state, map, bw, current_block, mtx);
     int block_number = 0;
     while(true){
-        if(successfully_bind_block){
+        if(state->successfully_bind_block){
             current_block = selete_block(block_number);
             insert_block(map);
             block_number++;
@@ -70,30 +69,28 @@ void Tetris::run(){
         }             
         show_map(map);
         system("cls");
-        if(!game_state) break;
+        if(!state->game_state) break;
     }
 }
 
 Tetris::~Tetris(){
     if(t1.joinable()) t1.join();
-
 }
 
 
 
 void Tetris::clear_block(){
-
     int line_clear_count = 0;
     int line_clear = 0;
-    for(int i = y -2; i > 0; --i){
-        for(int j = x -2; j > 0; --j){
+    for(int i = state->y -2; i > 0; --i){
+        for(int j = state->x -2; j > 0; --j){
             if((*map)[i][j] == 2){
                 line_clear_count++;
             }
         } 
-        if(line_clear_count == (x -2)){
+        if(line_clear_count == (state->x -2)){
             line_clear++;
-            for(int n = x -2; n > 0; --n){
+            for(int n = state->x -2; n > 0; --n){
                 (*map)[i][n] = 0;
             }
         }
@@ -101,14 +98,14 @@ void Tetris::clear_block(){
     }
     
     while(line_clear != 0){
-        for(int i = y -2; i > 1; --i){
-            for(int j = x -2; j > 0; --j){
+        for(int i = state->y -2; i > 1; --i){
+            for(int j = state->x -2; j > 0; --j){
                 if((*map)[i][j] == 0){
                     line_clear_count++;
                 }
             }
-            if(line_clear_count == (x-2)){
-                for(int n = x-2; n>0; --n){
+            if(line_clear_count == (state->x-2)){
+                for(int n = state->x-2; n>0; --n){
                     (*map)[i][n] = (*map)[i-1][n];
                     (*map)[i-1][n] = 0;
                 }   
@@ -124,7 +121,7 @@ void Tetris::clear_block(){
 }
 
 void Tetris::down_block_and_bind(){
-    while(running){
+    while(state->running){
         mtx->lock();
 
 
@@ -142,17 +139,17 @@ void Tetris::down_block_and_bind(){
         //1  5 (1 2 3 4)
         // Check only within the window region (18*8*2 = 288 iterations -> optimized to 4*4*2 = 32 iterations)
 
-        int down = std::clamp(bw->insert_window_down, 0, y-1);
-        int up = std::clamp(bw->insert_window_up, 0, y-1);
-        int back = std::clamp(bw->insert_window_back, 0, x-1);
-        int front = std::clamp(bw->insert_window_front, 0, x-1);
+        int down = std::clamp(bw->insert_window_down, 0, state->y-1);
+        int up = std::clamp(bw->insert_window_up, 0, state->y-1);
+        int back = std::clamp(bw->insert_window_back, 0, state->x-1);
+        int front = std::clamp(bw->insert_window_front, 0, state->x-1);
 
 
         for(int i = down-1; i >= up; --i){
             for(int j = back-1; j >= front; --j){
                 if((*map)[i][j] == 1){
                     if(((*map)[i+1][j] == -1 || (*map)[i+1][j]== 2)){
-                        bind_block = true;
+                        state->bind_block = true;
                     }
                 }
             }   
@@ -160,7 +157,7 @@ void Tetris::down_block_and_bind(){
         for(int i = down-1; i >= up; --i){
             for(int j = back-1; j >= front; --j){
                 if((*map)[i][j] == 1){
-                    if(bind_block){
+                    if(state->bind_block){
                         (*map)[i][j] = 2;
                     }
                     else{
@@ -171,9 +168,9 @@ void Tetris::down_block_and_bind(){
             }
         }
 
-        if(bind_block){
-            successfully_bind_block = true;
-            bind_block = false;
+        if(state->bind_block){
+            state->successfully_bind_block = true;
+            state->bind_block = false;
             clear_block();
         }
         else{
@@ -225,8 +222,8 @@ std::shared_ptr<Block> Tetris::selete_block(int block_number){
 void Tetris::insert_block(std::shared_ptr<std::vector<std::vector<int>>> map){
     vector<vector<vector<int>>> block = current_block->create_block();
     
-    bw->insert_window_front = ((x/2 -2));
-    bw->insert_window_back = ((x/2 +2));
+    bw->insert_window_front = ((state->x/2 -2));
+    bw->insert_window_back = ((state->x/2 +2));
     bw->insert_window_up = 1; 
     bw->insert_window_down = 5; 
     int block_x=0;
@@ -247,22 +244,22 @@ void Tetris::insert_block(std::shared_ptr<std::vector<std::vector<int>>> map){
         }   
         block_y++;
     }
-    successfully_bind_block = false;
+    state->successfully_bind_block = false;
 }
 
 void Tetris::game_over(){
-    game_state = false;
-    running = false;
+    state->game_state = false;
+    state->running = false;
 }
 
 std::shared_ptr<std::vector<std::vector<int>>> Tetris::gridmap(){
-    auto v2 = std::make_shared<std::vector<std::vector<int>>>(y, std::vector<int>(x, -1));
-    for(int i =0; i< y; ++i){
-        for(int j =0; j< x; ++j){
+    auto v2 = std::make_shared<std::vector<std::vector<int>>>(state->y, std::vector<int>(state->x, -1));
+    for(int i =0; i< state->y; ++i){
+        for(int j =0; j< state->x; ++j){
             if(i == 0) break;
-            if(i == (y-1)) break;
+            if(i == (state->y-1)) break;
             if(j == 0) continue;
-            if(j == (x-1)) continue;
+            if(j == (state->x-1)) continue;
             (*v2)[i][j] = 0;
         }
     }
@@ -270,8 +267,8 @@ std::shared_ptr<std::vector<std::vector<int>>> Tetris::gridmap(){
 }
 
 void Tetris::show_map(std::shared_ptr<std::vector<std::vector<int>>> map){
-    for(int i = 0; i< y; ++i){
-        for(int j =0; j< x; ++j){
+    for(int i = 0; i< state->y; ++i){
+        for(int j =0; j< state->x; ++j){
             // Wall
             if((*map)[i][j] == -1){
                 std::cout << "бс ";

@@ -24,6 +24,13 @@ struct block_window {
     int insert_window_down;
 };
 
+struct game_state {
+    int x, y;
+    bool bind_block;
+    bool game_state;
+    bool successfully_bind_block;
+    std::atomic_bool running;
+};
 
 class Tetris {
 public:
@@ -37,15 +44,11 @@ public:
 
 private:
     std::shared_ptr<block_window> bw;
-    bool successfully_bind_block;
+    std::shared_ptr<game_state> state;
     std::shared_ptr<Block> current_block;
     std::shared_ptr<std::vector<std::vector<int>>> map;
-    bool game_state;
-    int x, y;
     std::shared_ptr<std::mutex> mtx;
-    std::atomic_bool running;
     std::thread t1;
-    bool bind_block;
     void init();
     void clear_block();
     void down_block_and_bind();
