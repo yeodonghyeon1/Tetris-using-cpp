@@ -190,8 +190,8 @@ void Tetris::down_block_and_bind(){
 }
 
 void Tetris::game_over_handler(){
-    state->game_state = false;
-    state->running = false;
+    std::shared_ptr<PlayAction> pa = std::make_shared<PlayAction>(state);
+    pa->game_over();
 }
 
 std::shared_ptr<std::vector<std::vector<int>>> Tetris::gridmap(){
