@@ -42,7 +42,7 @@ public:
     void set_x(int new_x);
     void set_y(int new_y);
     void run();
-    ~Tetris();
+    ~Tetris() = default;
 
 private:
     std::shared_ptr<block_window> bw;
@@ -50,12 +50,7 @@ private:
     std::shared_ptr<Block> current_block;
     std::shared_ptr<std::vector<std::vector<int>>> map;
     std::shared_ptr<std::mutex> mtx;
-    std::thread t1;
     void init();
-    void clear_block();
-    void down_block_and_bind();
-    std::shared_ptr<Block> selete_block(int block_number);
-    void insert_block(std::shared_ptr<std::vector<std::vector<int>>> map);
     std::shared_ptr<std::vector<std::vector<int>>> gridmap();
     void show_map(std::shared_ptr<std::vector<std::vector<int>>> map);
 };
