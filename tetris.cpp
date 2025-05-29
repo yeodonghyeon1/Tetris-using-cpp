@@ -9,7 +9,10 @@
 #include "block.h"
 #include "tetris.h"
 #include "keyAction.h"
+#include "playAction.h"
 using namespace std;
+
+
 
 
 
@@ -41,7 +44,7 @@ void Tetris::init(){
 }
 
 int Tetris::roation_handler(int lotation_number){
-    std::shared_ptr<ActionBlock> ab = std::make_shared<ActionBlock>(state, map, current_block, bw);
+    std::shared_ptr<ActionBlock> ab = std::make_shared<ActionBlock>(this, state, map, current_block, bw);
     bool result = ab->block_rotation(lotation_number);
      if(result){ 
         lotation_number++;
@@ -59,8 +62,10 @@ void Tetris::run(){
     int block_number = 0;
     while(true){
         if(state->successfully_bind_block){
-            current_block = selete_block(block_number);
-            insert_block(map);
+            std::shared_ptr<ActionBlock> ab = std::make_shared<ActionBlock>(this, state, map, current_block, bw);
+
+            current_block = ab->selete_block(block_number);
+            ab->insert_block(map);
             block_number++;
 
             if(block_number == 7){
@@ -184,70 +189,7 @@ void Tetris::down_block_and_bind(){
     }
 }
 
-std::shared_ptr<Block> Tetris::selete_block(int block_number){
-    switch(block_number) {
-        case 0: {
-            auto b = std::make_shared<I_Mino>();
-            return b;
-        }
-        case 1: {
-            auto b = std::make_shared<O_Mino>();
-            return b;
-        }
-        case 2: {
-            auto b = std::make_shared<T_Mino>();
-            return b;
-        }
-        case 3: {
-            auto b = std::make_shared<L_Mino>();
-            return b;
-        }
-        case 4: {
-            auto b = std::make_shared<J_Mino>();
-            return b;
-        }
-        case 5: {
-            auto b = std::make_shared<S_Mino>();
-            return b;
-        }
-        case 6: {
-            auto b = std::make_shared<Z_Mino>();
-            return b;
-        }
-        default:
-            return nullptr;
-    }
-}
-
-void Tetris::insert_block(std::shared_ptr<std::vector<std::vector<int>>> map){
-    vector<vector<vector<int>>> block = current_block->create_block();
-    
-    bw->insert_window_front = ((state->x/2 -2));
-    bw->insert_window_back = ((state->x/2 +2));
-    bw->insert_window_up = 1; 
-    bw->insert_window_down = 5; 
-    int block_x=0;
-    int block_y=0;
-    // Block creation area
-
-    for(int i = bw->insert_window_up; i < bw->insert_window_down; ++i){
-        block_x = 0;
-        for(int j = bw->insert_window_front; j < bw->insert_window_back; ++j){
-            if(block[3][block_y][block_x] == 1){
-                if((*map)[i][j] == 2){
-                    game_over();
-                }
-            }
-            (*map)[i][j] = block[3][block_y][block_x];
-            block_x++;
-
-        }   
-        block_y++;
-    }
-    state->successfully_bind_block = false;
-}
-
-void Tetris::game_over(){
+void Tetris::game_over_handler(){
     state->game_state = false;
     state->running = false;
 }

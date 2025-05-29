@@ -11,12 +11,13 @@ using namespace std;
 
 class ActionBlock {
 public:
-    ActionBlock(std::shared_ptr<game_state> state, std::shared_ptr<vector<vector<int>>> map, std::shared_ptr<Block>& current_block, std::shared_ptr<block_window> bw);
+    ActionBlock(Tetris* ts, std::shared_ptr<game_state> state, std::shared_ptr<vector<vector<int>>> map, std::shared_ptr<Block>& current_block, std::shared_ptr<block_window> bw);
     bool block_rotation(int lotation_number);
     std::shared_ptr<Block> selete_block(int block_number);
     void insert_block(std::shared_ptr<std::vector<std::vector<int>>> map);
 
 private:
+    Tetris* ts;
     std::shared_ptr<game_state> state;
     std::shared_ptr<block_window> bw;
     std::shared_ptr<vector<vector<int>>> map;

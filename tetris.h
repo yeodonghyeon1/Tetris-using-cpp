@@ -36,6 +36,8 @@ class Tetris {
 public:
 
     int roation_handler(int lotation_number);
+    void game_over_handler();
+
     Tetris();
     void set_x(int new_x);
     void set_y(int new_y);
@@ -54,7 +56,6 @@ private:
     void down_block_and_bind();
     std::shared_ptr<Block> selete_block(int block_number);
     void insert_block(std::shared_ptr<std::vector<std::vector<int>>> map);
-    void game_over();
     std::shared_ptr<std::vector<std::vector<int>>> gridmap();
     void show_map(std::shared_ptr<std::vector<std::vector<int>>> map);
 };
