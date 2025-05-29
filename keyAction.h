@@ -7,16 +7,17 @@
 #include <vector>
 #include <memory>
 #include "block.h"
-#include "tetris.h"
 #include <thread> 
 #include <atomic>
 #include "blockAction.h"
 
 using namespace std;
 
+class Tetris;
+
 class KeyAction {
 public:
-    KeyAction(int x, int y, std::shared_ptr<vector<vector<int>>> map, bool& bind_block, std::atomic_bool& running, std::shared_ptr<block_window> bw, std::shared_ptr<Block>& current_block, std::shared_ptr<std::mutex>& mtx);
+    KeyAction(Tetris* te, int x, int y, std::shared_ptr<vector<vector<int>>> map, bool& bind_block, std::atomic_bool& running, std::shared_ptr<block_window> bw, std::shared_ptr<Block>& current_block, std::shared_ptr<std::mutex>& mtx);
     void key_event();
     ~KeyAction();
 
@@ -30,6 +31,7 @@ private:
     std::shared_ptr<std::mutex>& mtx;
     bool& bind_block;
     std::atomic_bool& running;
+    Tetris* te;
     // bool& game_state;
 };
 

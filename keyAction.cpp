@@ -9,8 +9,8 @@
 #include "tetris.h"
 #include "blockAction.h"
 
-KeyAction::KeyAction(int x, int y, std::shared_ptr<std::vector<std::vector<int>>> map, bool& bind_block, std::atomic_bool& running, std::shared_ptr<block_window> bw, std::shared_ptr<Block>& current_block, std::shared_ptr<std::mutex>& mtx) 
-    : x(x), y(y), map(map), bind_block(bind_block), running(running), bw(bw), current_block_ref(current_block), mtx(mtx){
+KeyAction::KeyAction(Tetris* te, int x, int y, std::shared_ptr<std::vector<std::vector<int>>> map, bool& bind_block, std::atomic_bool& running, std::shared_ptr<block_window> bw, std::shared_ptr<Block>& current_block, std::shared_ptr<std::mutex>& mtx) 
+    : te(te), x(x), y(y), map(map), bind_block(bind_block), running(running), bw(bw), current_block_ref(current_block), mtx(mtx){
     t1 = std::thread(&KeyAction::key_event, this);
 
 }
@@ -97,14 +97,7 @@ void KeyAction::key_event(){
                                 }
                                 break;
                             case UP: {
-                                std::shared_ptr<ActionBlock> rotate_block_ptr = std::make_shared<ActionBlock>(x, y, map, current_block_ref, bw);
-                                bool result = rotate_block_ptr->block_rotation(lotation_number);
-                                if(result){ 
-                                    lotation_number++;
-                                }
-                                if(lotation_number == 4){
-                                    lotation_number = 0;
-                                }
+                                lotation_number = te->roation_handler(lotation_number);
                                 break;
                             }
                             case DOWN:

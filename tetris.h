@@ -4,13 +4,13 @@
 #include <iostream>
 #include <vector>
 #include <thread>
-#include "block.h"
 #include <mutex>
 #include <memory>
 #include <conio.h>
 #include <algorithm>
 #include <atomic>
-#include "tetris.h"
+
+// #include "blockAction.h"
 using namespace std;
 #define UP 72
 #define DOWN 80
@@ -27,14 +27,8 @@ struct block_window {
 
 class Tetris {
 public:
-    bool successfully_bind_block;
-    std::shared_ptr<Block> current_block;
-    std::shared_ptr<std::vector<std::vector<int>>> map;
-    bool game_state;
 
-
-    std::shared_ptr<block_window> bw;
-
+    int roation_handler(int lotation_number);
     Tetris();
     void set_x(int new_x);
     void set_y(int new_y);
@@ -42,11 +36,17 @@ public:
     ~Tetris();
 
 private:
+    std::shared_ptr<block_window> bw;
+    bool successfully_bind_block;
+    std::shared_ptr<Block> current_block;
+    std::shared_ptr<std::vector<std::vector<int>>> map;
+    bool game_state;
     int x, y;
     std::shared_ptr<std::mutex> mtx;
     std::atomic_bool running;
     std::thread t1;
     bool bind_block;
+    void init();
     void clear_block();
     void down_block_and_bind();
     std::shared_ptr<Block> selete_block(int block_number);

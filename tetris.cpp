@@ -1,12 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <thread>
-#include "block.h"
 #include <mutex>
 #include <memory>
 #include <conio.h>
 #include <algorithm>
 #include <atomic>
+#include "block.h"
 #include "tetris.h"
 #include "keyAction.h"
 using namespace std;
@@ -15,7 +15,16 @@ using namespace std;
 
 
 
-Tetris::Tetris(){
+Tetris::Tetris(){}
+
+void Tetris::set_x(int new_x){
+    x= new_x;
+}
+void Tetris::set_y(int new_y){
+    y= new_y;
+}
+
+void Tetris::init(){
     x = 10;
     y = 20;
     bw = std::make_shared<block_window>();
@@ -28,21 +37,26 @@ Tetris::Tetris(){
     bind_block = false;
     game_state = true;
     successfully_bind_block = true;
-    
+    map = gridmap();
+
 }
 
-void Tetris::set_x(int new_x){
-    x= new_x;
-}
-void Tetris::set_y(int new_y){
-    y= new_y;
+int Tetris::roation_handler(int lotation_number){
+    std::shared_ptr<ActionBlock> ab = std::make_shared<ActionBlock>(x, y, map, current_block, bw);
+    bool result = ab->block_rotation(lotation_number);
+     if(result){ 
+        lotation_number++;
+    }
+    if(lotation_number == 4){
+        lotation_number = 0;
+    }
+    return lotation_number;
 }
 
 void Tetris::run(){
-    map = gridmap();
+    init();
     t1 = std::thread(&Tetris::down_block_and_bind, this);
-
-    std::shared_ptr<KeyAction> key_thread = std::make_shared<KeyAction>(x, y, map, bind_block, running, bw, current_block, mtx);
+    std::shared_ptr<KeyAction> key_thread = std::make_shared<KeyAction>(this, x, y, map, bind_block, running, bw, current_block, mtx);
     int block_number = 0;
     while(true){
         if(successfully_bind_block){
