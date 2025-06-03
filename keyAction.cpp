@@ -9,11 +9,16 @@
 #include "tetris.h"
 #include "blockAction.h"
 
+
+// Key action class
+// Thread join for safe termination when returning the class
+// Rotate and move blocks with arrow keys. The logic proceeds in the order of moving the block with the block window (insert_window) and then checking and applying the bind.
 KeyAction::KeyAction(Tetris* te, std::shared_ptr<game_state> state, std::shared_ptr<std::vector<std::vector<int>>> map, std::shared_ptr<block_window> bw, std::shared_ptr<Block>& current_block, std::shared_ptr<std::mutex>& mtx)
     : te(te), state(state), map(map), bw(bw), current_block_ref(current_block), mtx(mtx){
     t1 = std::thread(&KeyAction::key_event, this);
 }
 
+// Thread join for safe termination when returning the class
 KeyAction::~KeyAction(){
     if(t1.joinable()) t1.join();
 }
@@ -22,11 +27,13 @@ void KeyAction::key_event(){
     char c;
     bool can_move = false;
     int lotation_number = 0;
+
+    // Rotate and move blocks with arrow keys. The logic proceeds in the order of moving the block with the block window (insert_window) and then checking and applying the bind.
     while(state->running){
-        if (_kbhit()) {
-            c = _getch();
-            if (c == -32) {
-                c = _getch();
+        if (_kbhit()) { // When key is pressed
+            c = _getch(); // Get key
+            if (c == -32) { // -32 is returned first for arrow keys
+                c = _getch(); // Get key
                 {
                     int move_number = 0;
                     std::lock_guard<std::mutex> lock(*mtx);

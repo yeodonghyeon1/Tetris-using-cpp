@@ -4,6 +4,8 @@
 #include <vector>
 using namespace std;
 
+
+// Block state class
 class Block {
 public:
     vector<vector<vector<int>>> mino;

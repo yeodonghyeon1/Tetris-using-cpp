@@ -1,10 +1,10 @@
-
 #include "block.h"
 #include <iostream>
 #include <thread>
 using namespace std;
 
 
+// Block state class
 vector<vector<vector<int>>> Block::create_block(){
     mino[0] = {
         {0, 0, 0, 0},

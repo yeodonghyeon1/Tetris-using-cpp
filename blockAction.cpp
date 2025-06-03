@@ -5,6 +5,8 @@ ActionBlock::ActionBlock(Tetris* ts, std::shared_ptr<game_state> state, std::sha
 
 }
 
+
+// Block rotation function. The logic checks and applies rotation possibility through rotation_allow (rotation is only allowed when the number of blocks is 4) from the current_block within the current window.
 bool ActionBlock::block_rotation(int lotation_number){
     int down = std::clamp(bw->insert_window_down, 0, state->y-1);
     int up = std::clamp(bw->insert_window_up, 0, state->y-1);
@@ -13,7 +15,7 @@ bool ActionBlock::block_rotation(int lotation_number){
     vector<vector<vector<int>>> block = current_block_ref->create_block();
     int block_x=0;
     int block_y=0;
-    int rotation_allow = 0;
+    int rotation_allow = 0; // Rotation is only possible when 4 or more block units are allowed
 
     for(int i = up; i < down; ++i){
         block_x = 0;
@@ -49,6 +51,8 @@ bool ActionBlock::block_rotation(int lotation_number){
         return false;
 }
 
+
+// Block selection function
 std::shared_ptr<Block> ActionBlock::selete_block(int block_number){
     switch(block_number) {
         case 0: {
@@ -84,6 +88,7 @@ std::shared_ptr<Block> ActionBlock::selete_block(int block_number){
     }
 }
 
+// Function to insert block data into map
 void ActionBlock::insert_block(std::shared_ptr<std::vector<std::vector<int>>> map){
     vector<vector<vector<int>>> block = current_block_ref->create_block();
     
